@@ -649,21 +649,24 @@
         .map((c) => ({ time: c.time, open: c.open, high: c.high, low: c.low, close: c.close }));
     };
 
-    const generateRandomKline = (points = 80) => {
+    const generateRandomKline = (pastDays = 7, futureDays = 30) => {
       const now = Date.now();
+      const stepMs = 6 * 60 * 60 * 1000; // 6h
+      const pastPoints = Math.ceil((pastDays * 24) / 6);
+      const futurePoints = Math.ceil((futureDays * 24) / 6);
+      const totalPoints = pastPoints + futurePoints;
       let price = 350 + Math.random() * 20;
-      const stepMs = 60 * 60 * 1000; // 1h
       const areaData = [];
-      for (let i = points - 1; i >= 0; i--) {
-        const t = now - i * stepMs;
+      for (let i = totalPoints - 1; i >= 0; i--) {
+        const t = now - (pastPoints * stepMs) + i * stepMs;
         const drift = (Math.random() - 0.5) * 4;
         price = Math.max(1, price + drift);
         areaData.push({ time: Math.floor(t / 1000), usd: price, bnb: price / 300 }); // 假设 1 BNB ~ 300 USD
       }
-      const candles = buildCandles(areaData, 1);
-      const span = `${new Date(areaData[0].time * 1000).toLocaleDateString()} ~ ${new Date(areaData.at(-1).time * 1000).toLocaleDateString()}`;
+      const candles = buildCandles(areaData, 6); // 与 6 小时步长匹配
+      const span = `${new Date(areaData[0].time * 1000).toLocaleDateString()} ~ ${new Date(areaData.at(-1).time * 1000).toLocaleDateString()}（含未来预测）`;
       const last = areaData.at(-1);
-      const txCount = Math.floor(30 + Math.random() * 70);
+      const txCount = Math.floor(80 + Math.random() * 60);
       return {
         candles,
         areaData: areaData.map((p) => ({ time: p.time, value: p.usd })),

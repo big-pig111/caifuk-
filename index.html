@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>财富 K 线 | BSC 钱包洞察</title>
+  <title>掘金 K 线 | BSC 钱包洞察</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -164,6 +164,33 @@
       overflow: hidden;
       position: relative;
     }
+    .spinner-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(5, 8, 16, 0.6);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 150ms ease;
+    }
+    .spinner-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.12);
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
     .pill-input {
       border-radius: 999px;
       padding-left: 16px;
@@ -223,7 +250,7 @@
     <header class="header">
       <div class="title-row">
         <div class="title">
-          <h1>财富 K 线 · BSC 钱包洞察</h1>
+          <h1>掘金 K 线 · BSC 钱包洞察</h1>
           <div class="subtitle">连接钱包或粘贴地址，基于 BSC 交易生成财富走势 K 线，可调节时间范围与平滑参数。</div>
         </div>
         <div class="actions">
@@ -292,10 +319,14 @@
 
       <div class="panel">
         <div class="row" style="justify-content: space-between; align-items: center;">
-          <h3>财富 K 线</h3>
+          <h3>掘金 K 线</h3>
           <span class="muted" id="addressTag">未选择地址</span>
         </div>
-        <div id="chart"></div>
+        <div id="chart">
+          <div id="spinnerOverlay" class="spinner-overlay">
+            <div class="spinner"></div>
+          </div>
+        </div>
         <div class="stat-cards" style="margin-top: 14px;">
           <div class="stat">
             <div class="label">当前 BNB</div>
@@ -356,6 +387,7 @@
       spanLabel: document.getElementById("spanLabel"),
       addressTag: document.getElementById("addressTag"),
       chart: document.getElementById("chart"),
+      spinnerOverlay: document.getElementById("spinnerOverlay"),
       netDot: document.getElementById("netDot"),
       netLabel: document.getElementById("netLabel"),
       logList: document.getElementById("logList"),
@@ -685,6 +717,7 @@
 
     const analyze = async () => {
       try {
+        elements.spinnerOverlay.classList.add("show");
         elements.analyzeBtn.disabled = true;
         const address = (elements.addressInput.value || "").trim() || state.address;
         if (!address) throw new Error("请先连接钱包或粘贴地址");
@@ -716,6 +749,7 @@
         log("API 受限，已展示可用数据");
       } finally {
         elements.analyzeBtn.disabled = false;
+        elements.spinnerOverlay.classList.remove("show");
       }
     };
 

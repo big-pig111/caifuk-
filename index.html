@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>掘金 K 线 | BSC 钱包洞察</title>
+  <title>BSC 生涯 K 线 | BSC 钱包洞察</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -250,7 +250,7 @@
     <header class="header">
       <div class="title-row">
         <div class="title">
-          <h1>掘金 K 线 · BSC 钱包洞察</h1>
+          <h1>BSC 生涯 K 线 · BSC 钱包洞察</h1>
           <div class="subtitle">连接钱包或粘贴地址，基于 BSC 交易生成财富走势 K 线，可调节时间范围与平滑参数。</div>
         </div>
         <div class="actions">
@@ -319,7 +319,7 @@
 
       <div class="panel">
         <div class="row" style="justify-content: space-between; align-items: center;">
-          <h3>掘金 K 线</h3>
+          <h3>BSC 生涯 K 线</h3>
           <span class="muted" id="addressTag">未选择地址</span>
         </div>
         <div id="chart">
@@ -657,8 +657,8 @@
       const totalPoints = pastPoints + futurePoints;
       let price = 350 + Math.random() * 20;
       const areaData = [];
-      for (let i = totalPoints - 1; i >= 0; i--) {
-        const t = now - (pastPoints * stepMs) + i * stepMs;
+      for (let i = 0; i < totalPoints; i++) {
+        const t = now - pastPoints * stepMs + i * stepMs;
         const drift = (Math.random() - 0.5) * 4;
         price = Math.max(1, price + drift);
         areaData.push({ time: Math.floor(t / 1000), usd: price, bnb: price / 300 }); // 假设 1 BNB ~ 300 USD
@@ -723,7 +723,11 @@
         elements.spinnerOverlay.classList.add("show");
         elements.analyzeBtn.disabled = true;
         const address = (elements.addressInput.value || "").trim() || state.address;
-        if (!address) throw new Error("请先连接钱包或粘贴地址");
+        if (!address) {
+          alert("请先连接钱包或粘贴地址");
+          setStatus(false, "需要钱包地址");
+          return;
+        }
         state.address = address;
         elements.addressTag.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
         setStatus(true, "正在拉取数据…");
